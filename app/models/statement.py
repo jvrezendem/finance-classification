@@ -2,19 +2,26 @@
 
 from datetime import date
 from typing import Literal
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 tipo_transacao = Literal[
-    "credito",
-    "debito",
     "pix",
-    "outros"
+    "ted",
+    "boleto",
+    "transferencia",
+    "compra_cartao",
+    "saque",
+    "deposito",
+    "tarifa",
+    "juros",
+    "estorno",
+    "unknown",
 ]
 
 direcao_transacao = Literal[
-    "entrada",
-    "saida",
-    "desconhecido"
+    "debit",
+    "credit",
+    "unknown",
 ]
 
 
@@ -27,15 +34,17 @@ metodo_extracao = Literal[
 
 #dados de uma transação
 class Transacao(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     date_time: date | None
 
     description_raw: str
     description_normalized: str | None 
 
     amount_cents: int | None
-    direction: direcao_transacao = "desconhecido"
+    direction: direcao_transacao
     #tipo da transação
-    transaction_type: tipo_transacao = "outros"
+    transaction_type: tipo_transacao
 
     balance_after_cents: int | None
 
@@ -49,6 +58,8 @@ class Transacao(BaseModel):
 
 #dados do extrato completo
 class Extrato(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     bank_name: str | None
     account_holder: str | None
     account_reference_masked: str | None
