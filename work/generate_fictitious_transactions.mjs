@@ -6,7 +6,7 @@ const outputPath = path.resolve('data/outputs/result_test_500_ficticias.csv');
 const sourceHeader = fs.readFileSync(sourcePath, 'utf8').split(/\r?\n/, 1)[0].replace(/^\uFEFF/, '').split(',');
 const headers = [...sourceHeader, 'category'];
 
-const incomeCategories = ['deposito', 'ganho de corrida', 'oagamento'];
+const incomeCategories = ['deposito', 'ganho de corrida', 'pagamento'];
 const expenseCategories = ['outros', 'acessórios', 'alimentação', 'celular/chip', 'cnh', 'combustivel', 'financeamento', 'ipva', 'lavagem', 'manutenção', 'multas', 'pedagio e estacionamento', 'seguro'];
 const expenseDescriptions = {
   'outros': 'Compra diversa', 'acessórios': 'Loja de acessórios automotivos', 'alimentação': 'Restaurante e lanchonete',
@@ -40,7 +40,7 @@ for (let i = 0; i < 500; i++) {
   const signed = isIncome ? cents : -cents;
   balance += signed;
   const direction = isIncome ? 'credit' : 'debit';
-  const transactionType = category === 'deposito' ? 'deposito' : (category === 'oagamento' ? 'transferencia' : 'pix');
+  const transactionType = category === 'deposito' ? 'deposito' : (category === 'pagamento' ? 'transferencia' : 'pix');
   const description = isIncome
     ? (category === 'deposito' ? `Dep dinheiro ATM ${day}/${month} ${hour}:${minute} CENTRO`
       : category === 'ganho de corrida' ? `Pix - Recebido ${day}/${month} ${hour}:${minute} PLATAFORMA DE CORRIDAS`
