@@ -17,21 +17,12 @@ def validate_transaction(transaction: Transacao,period_start: date | None = None
         warnings.append("invalid_source_page")
     if not transaction.source_text.strip():
         warnings.append("missing_source_text")
-    if (
-        transaction.date
-        and period_start
-        and transaction.date < period_start
-    ):
+    if (transaction.date and period_start and transaction.date < period_start):
         warnings.append("date_before_statement_period")
-    return transaction.model_copy(update={"warnings": warnings})
-    if (
-        transaction.date
-        and period_end
-        and transaction.date > period_end
-    ):
+    if (transaction.date and period_end and transaction.date > period_end):
         warnings.append("date_after_statement_period")
 
-    transaction.warnings = sorted(set(warnings))
+    transaction.warning = sorted(set(warnings))
     return transaction
 
 def get_signed_amount_cents(transaction: Transacao):

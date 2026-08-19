@@ -2,7 +2,7 @@
 
 from datetime import date
 from typing import Literal
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 tipo_transacao = Literal[
     "pix",
@@ -55,6 +55,11 @@ class Transacao(BaseModel):
     source_text: str
 
     extraction_method: metodo_extracao
+
+    warnings: list[str] = Field(
+        default_factory=list,
+        exclude=True,       # kept off the JSON schema sent to Groq (strict mode requires all props in `required`)
+    )
 
 #dados do extrato completo
 class Extrato(BaseModel):

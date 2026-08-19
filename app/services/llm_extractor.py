@@ -6,12 +6,29 @@ from app.models.statement import Extrato
 
 validate_settings()
 
-#cria o cliente da openai
+#cria o cliente do llm
 client = Groq(api_key=LLM_API_KEY)
 
 def load_prompt():
     prompt_path = Path("./app/prompts/statement_extraction.txt")
     return prompt_path.read_text(encoding="utf-8")
+
+def _extrato_schema_for_llm() -> dict:
+    """Return the Extrato JSON schema with post-processing fields removed.
+
+    Groq strict mode requires every property listed in `required`.
+    Fields like `warnings` have defaults and are populated after LLM extraction,
+    so they must be stripped from the schema before sending to the API.
+    """
+    schema = Extrato.model_json_schema()
+
+    # Strip `warnings` from Transacao definition
+    transacao = schema.get("$defs", {}).get("Transacao", {})
+    transacao.get("properties", {}).pop("warnings", None)
+    if "required" in transacao and "warnings" in transacao["required"]:
+        transacao["required"].remove("warnings")
+
+    return schema
 
 def extract_transactions_with_llm(extrato_text, extraction_method):   
     prompt = load_prompt()
@@ -41,7 +58,7 @@ def extract_transactions_with_llm(extrato_text, extraction_method):
             "json_schema": {
                 "name": "extrato",
                 "strict": True,
-                "schema": Extrato.model_json_schema(),
+                "schema": _extrato_schema_for_llm(),
             },
         }
     )
