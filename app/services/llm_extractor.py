@@ -10,7 +10,8 @@ validate_settings()
 client = Groq(api_key=LLM_API_KEY)
 
 def load_prompt():
-    prompt_path = Path("./app/prompts/statement_extraction.txt")
+    # Resolve path relative to this file, not the working directory
+    prompt_path = Path(__file__).parent.parent / "prompts" / "statement_extraction.txt"
     return prompt_path.read_text(encoding="utf-8")
 
 def _extrato_schema_for_llm() -> dict:
